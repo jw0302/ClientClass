@@ -41,12 +41,11 @@ public class ChattingClient extends JFrame {
     private String currentTitle;
     private final EnhancedTextField nickInputField;
     private final EnhancedTextField inputField;
+    private JLabel userText;
 
 
     public ChattingClient() {
 //		<< INIT >>
-    	
-//    	프로그램을 종료하는 기능이 있다.
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -57,7 +56,7 @@ public class ChattingClient extends JFrame {
 
                 if (confirmed == JOptionPane.YES_OPTION) {
                     if (socketCorrespModule != null){
-                        socketCorrespModule.stop();
+                        socketCorrespModule.connectionSwitch(false);
                     }
                     System.out.println("Select : " + confirmed);
                     dispose();
@@ -85,11 +84,11 @@ public class ChattingClient extends JFrame {
         mainPanel.add(loginPanel, "loginPanel");
         loginPanel.setLayout(null);
 
-        nickInputField = new EnhancedTextField();
         Insets nifInset = new Insets(8,12,8,12);
         Border borderPadding = BorderFactory.createEmptyBorder(8,12,8,12);
+
+        nickInputField = new EnhancedTextField();
         nickInputField.setMargin(nifInset);
-        nickInputField.setHorizontalAlignment(SwingConstants.LEFT);
         nickInputField.setBorder(borderPadding);
         nickInputField.setBounds(73,495,300,45);
         nickInputField.setColumns(10);
@@ -100,7 +99,6 @@ public class ChattingClient extends JFrame {
         nickInputField.setHintText("Input your nickname.");
         loginPanel.add(nickInputField);
 
-//       입력한 닉네임으로 로그인 하는 클릭이벤트
         JButton lpLoginBtn = new JButton("");
         lpLoginBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -109,7 +107,6 @@ public class ChattingClient extends JFrame {
             }
         });
 
-//        닉네임 입력 이벤트
         nickInputField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -119,7 +116,7 @@ public class ChattingClient extends JFrame {
             }
         });
 
-        lpLoginBtn.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/login_med.png"))));
+        lpLoginBtn.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/lgnBtn.png"))));
         lpLoginBtn.setBounds(73, 573, 300, 45);
         lpLoginBtn.setBackground(Color.white);
         lpLoginBtn.setOpaque(false);//투명하게
@@ -127,7 +124,7 @@ public class ChattingClient extends JFrame {
         loginPanel.add(lpLoginBtn);
 
         JLabel lpImageIcon = new JLabel("");
-        lpImageIcon.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/kakaotalk_sharing_btn_medium_ov.png"))));
+        lpImageIcon.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/icon2.png"))));
         lpImageIcon.setBounds(183, 226, 68, 69);
         loginPanel.add(lpImageIcon);
 
@@ -152,7 +149,6 @@ public class ChattingClient extends JFrame {
         cpChatList.setBorder(new EnhancedBorderLine(Color.ORANGE, 6, 10, 10));
         cpChatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-//        cpChatLsit에 클릭할게 있는지 확인 후 있으면 currentTitle Text에 넣어준다
         cpChatList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -167,7 +163,6 @@ public class ChattingClient extends JFrame {
             }
         });
 
-//        선택한 rpChatTitle의 대화방으로 들어감
         cpChatList.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -187,7 +182,7 @@ public class ChattingClient extends JFrame {
         cpChatListScroll.setViewportView(cpChatList);
 
         JLabel cpImageIcon = new JLabel("");
-        cpImageIcon.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/kakaotalk_sharing_btn_medium_ov.png"))));
+        cpImageIcon.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/icon2.png"))));
         cpImageIcon.setBounds(33, 33, 70, 70);
         chatListPanel.add(cpImageIcon);
 
@@ -195,8 +190,6 @@ public class ChattingClient extends JFrame {
         EnhancedBorderLine borderLine = new EnhancedBorderLine(Color.black, 2, 10, 10);
         addBtn.setBorder(borderLine);
         addBtn.addMouseListener(new MouseAdapter() {
-        	
-//        	새로운 채팅방 생성
             @Override
             public void mouseClicked(MouseEvent e) {
 
@@ -214,7 +207,7 @@ public class ChattingClient extends JFrame {
             }
         });
 
-        addBtn.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/plus-round_icon-icons.com_50065.png"))));
+        addBtn.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/add.png"))));
         addBtn.setBounds(34, 666, 65, 65);
         addBtn.setBackground(Color.ORANGE);
         addBtn.setOpaque(false);
@@ -232,29 +225,37 @@ public class ChattingClient extends JFrame {
         mainPanel.add(chatRoomPanel, "chatRoomPanel");
         chatRoomPanel.setLayout(null);
 
+        JLabel uIcon = new JLabel();
+        uIcon.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/entry.png"))));
+        uIcon.setBounds(30, 60, 40, 40);
+        chatRoomPanel.add(uIcon);
+
+
+        userText = new JLabel("");
+        userText.setBounds(60, 60, 40, 40);
+        chatRoomPanel.add(userText);
 
         JScrollPane rpContentsScroll = new JScrollPane();
         rpContentsScroll.setBounds(7, 103, 450, 590);
-        rpContentsScroll.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(12, 8, 12, 8), BorderFactory.createLineBorder(new Color(255, 255, 255, 0))));
-        rpContentsScroll.setViewportBorder(BorderFactory.createEmptyBorder());
         rpContentsScroll.getViewport().setOpaque(true);
+        rpContentsScroll.setBorder(new EnhancedBorderLine(Color.ORANGE, 4, 10, 10));
         chatRoomPanel.add(rpContentsScroll);
 
         rpContentsView = new JTextArea();
-//        rpContentsView.setBorder(new LineBorder(new Color(255, 255, 255, 0), 0));
+        rpContentsView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(12, 8, 12, 8),
+                BorderFactory.createLineBorder(new Color(255, 255, 255, 0))));
         rpContentsScroll.setViewportView(rpContentsView);
 
         inputField = new EnhancedTextField();
-        inputField.setBounds(7, 703, 366, 50);
+        inputField.setBounds(9, 701, 366, 50);
         inputField.setHintText("Input your message...");
-        inputField.setMargin(nifInset);
-        inputField.setBorder(borderPadding);
+        inputField.setMargin(new Insets(8,12,8,12));
+        inputField.setBorder(BorderFactory.createEmptyBorder(8,12,8,12));
+        inputField.setOpaque(false);
         inputField.setArcHeight(10);
         inputField.setArcWidth(10);
-        inputField.setBackground(Color.white);
         chatRoomPanel.add(inputField);
 
-//        현재 채팅방에서 나가는 이벤트, 나가면서 채팅방 rpContentsView의 글 다 지움
         JButton rpChatOutBtn = new JButton("");
         rpChatOutBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -264,31 +265,35 @@ public class ChattingClient extends JFrame {
             }
         });
 
-        rpChatOutBtn.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/quit_icon_149882.png"))));
+        rpChatOutBtn.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/out.png"))));
         rpChatOutBtn.setBounds(390, 29, 45, 50);
         rpChatOutBtn.setBackground(Color.ORANGE);
-        rpChatOutBtn.setBorder(new EnhancedBorderLine(Color.gray, 2, 10, 10));
         rpChatOutBtn.setFocusPainted(false);
         rpChatOutBtn.setContentAreaFilled(false);
+        rpChatOutBtn.setBorder(BorderFactory.createEmptyBorder());
+        rpChatOutBtn.setToolTipText("대기실로");
         chatRoomPanel.add(rpChatOutBtn);
 
 
         rpChatTitle = new JLabel("");
-        rpChatTitle.setBounds(30, 29, 300, 46);
+        rpChatTitle.setBounds(30, 15, 300, 46);
         rpChatTitle.setFont(new Font("Droid Sans Mono Slashed", Font.BOLD, 32));
         chatRoomPanel.add(rpChatTitle);
 
 
         JButton rpInputSubmit = new JButton("");
-        rpInputSubmit.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/mail_send_icon_180871.png"))));
+        rpInputSubmit.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/send.png"))));
         rpInputSubmit.addMouseListener(new MouseAdapter() {
-        	
-//        	채팅 입력값 전송 하는 이벤트
             @Override
             public void mouseClicked(MouseEvent e) {
                 sMsgInd();
             }
         });
+        rpInputSubmit.setBounds(382, 703, 75, 50);
+        rpInputSubmit.setBorderPainted(false);
+        rpInputSubmit.setContentAreaFilled(false);
+        rpInputSubmit.setFocusPainted(false);
+        chatRoomPanel.add(rpInputSubmit);
         inputField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -297,11 +302,7 @@ public class ChattingClient extends JFrame {
                 }
             }
         });
-        rpInputSubmit.setBounds(382, 703, 75, 50);
-        rpInputSubmit.setBorderPainted(false);
-        rpInputSubmit.setContentAreaFilled(false);
-        rpInputSubmit.setFocusPainted(false);
-        chatRoomPanel.add(rpInputSubmit);
+
     }
 
 
@@ -327,7 +328,6 @@ public class ChattingClient extends JFrame {
                 JOptionPane.ERROR_MESSAGE);
     }
 
-//    JList에 대화방 추가
     public void addItem(List<String> items) {
         userListModel.clear();
         for (String i : items) {
@@ -344,11 +344,10 @@ public class ChattingClient extends JFrame {
         socketCorrespModule = serverConnection.connect(nickInputField.getText());
     }
 
-//    inputField에 입력된 값의 사용자 닉네임과 입력값을 rpContentsView에 전송 주고 받는 메소드
     public void sMsgInd(){
         String userNickName = socketCorrespModule.getUser().getNickName();
         if (!inputField.getText().isBlank()){
-            rpContentsView.append("\n" + userNickName + " >> : " + inputField.getText());
+            rpContentsView.append("\n" + userNickName + " (나)  :  " + inputField.getText());
             socketCorrespModule.outputHandler(6, inputField.getText());
             inputField.setText("");
         }
@@ -360,4 +359,21 @@ public class ChattingClient extends JFrame {
         userListModel.clear();
     }
 
+    public void forcedExit(){
+        socketCorrespModule.onConnectionLost();
+        paneController("loginPanel");
+        notifyMsg("서버와의 연결이 끊겼습니다.");
+        clearAll();
+    }
+
+    public void userNums(int value){
+        SwingWorker<Void, String> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                userText.setText(String.valueOf(value));
+                return null;
+            }
+        };
+        worker.execute();
+    }
 }
