@@ -45,6 +45,8 @@ public class ChattingClient extends JFrame {
 
     public ChattingClient() {
 //		<< INIT >>
+    	
+//    	프로그램을 종료하는 기능이 있다.
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -98,6 +100,7 @@ public class ChattingClient extends JFrame {
         nickInputField.setHintText("Input your nickname.");
         loginPanel.add(nickInputField);
 
+//       입력한 닉네임으로 로그인 하는 클릭이벤트
         JButton lpLoginBtn = new JButton("");
         lpLoginBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -106,6 +109,7 @@ public class ChattingClient extends JFrame {
             }
         });
 
+//        닉네임 입력 이벤트
         nickInputField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -148,6 +152,7 @@ public class ChattingClient extends JFrame {
         cpChatList.setBorder(new EnhancedBorderLine(Color.ORANGE, 6, 10, 10));
         cpChatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+//        cpChatLsit에 클릭할게 있는지 확인 후 있으면 currentTitle Text에 넣어준다
         cpChatList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -162,6 +167,7 @@ public class ChattingClient extends JFrame {
             }
         });
 
+//        선택한 rpChatTitle의 대화방으로 들어감
         cpChatList.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -189,6 +195,8 @@ public class ChattingClient extends JFrame {
         EnhancedBorderLine borderLine = new EnhancedBorderLine(Color.black, 2, 10, 10);
         addBtn.setBorder(borderLine);
         addBtn.addMouseListener(new MouseAdapter() {
+        	
+//        	새로운 채팅방 생성
             @Override
             public void mouseClicked(MouseEvent e) {
 
@@ -246,6 +254,7 @@ public class ChattingClient extends JFrame {
         inputField.setBackground(Color.white);
         chatRoomPanel.add(inputField);
 
+//        현재 채팅방에서 나가는 이벤트, 나가면서 채팅방 rpContentsView의 글 다 지움
         JButton rpChatOutBtn = new JButton("");
         rpChatOutBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -273,6 +282,8 @@ public class ChattingClient extends JFrame {
         JButton rpInputSubmit = new JButton("");
         rpInputSubmit.setIcon(new ImageIcon(Objects.requireNonNull(ChattingClient.class.getResource("../assets/mail_send_icon_180871.png"))));
         rpInputSubmit.addMouseListener(new MouseAdapter() {
+        	
+//        	채팅 입력값 전송 하는 이벤트
             @Override
             public void mouseClicked(MouseEvent e) {
                 sMsgInd();
@@ -316,6 +327,7 @@ public class ChattingClient extends JFrame {
                 JOptionPane.ERROR_MESSAGE);
     }
 
+//    JList에 대화방 추가
     public void addItem(List<String> items) {
         userListModel.clear();
         for (String i : items) {
@@ -332,6 +344,7 @@ public class ChattingClient extends JFrame {
         socketCorrespModule = serverConnection.connect(nickInputField.getText());
     }
 
+//    inputField에 입력된 값의 사용자 닉네임과 입력값을 rpContentsView에 전송 주고 받는 메소드
     public void sMsgInd(){
         String userNickName = socketCorrespModule.getUser().getNickName();
         if (!inputField.getText().isBlank()){
